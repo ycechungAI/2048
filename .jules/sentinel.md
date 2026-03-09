@@ -7,3 +7,8 @@
 **Vulnerability:** The application was missing a Content Security Policy (CSP), which could allow attackers to execute malicious scripts or load unauthorized resources if other vulnerabilities like XSS were present.
 **Learning:** Even simple static web applications that do not use an external backend can benefit from defense in depth by applying a strict CSP. This app does not use inline scripts or external resources, so a simple `default-src 'self'` policy is sufficient and effective.
 **Prevention:** Include a CSP meta tag in the HTML `<head>` for all static web applications.
+
+## 2024-05-24 - Unhandled JSON.parse in localStorage
+**Vulnerability:** A persistent, client-side Denial of Service (DoS) caused by an unhandled `JSON.parse` acting on `localStorage` data, which is completely user-controllable and can easily be modified or corrupted. Additionally, a prototype pollution vector via `hasOwnProperty` existed in `fakeStorage`.
+**Learning:** `localStorage` is essentially untrusted input since it exists in the user's browser, and can be tampered with or corrupted due to storage limits. Directly parsing it without `try/catch` causes script execution to halt, making the webapp unusable until local storage is manually cleared.
+**Prevention:** Always wrap `JSON.parse` with `try/catch` when dealing with `localStorage`, and fail securely (e.g., reset the data rather than throwing uncaught exceptions). Also use `Object.prototype.hasOwnProperty.call` when checking properties on objects that could potentially have poisoned prototypes.
