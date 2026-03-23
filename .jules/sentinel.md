@@ -7,3 +7,8 @@
 **Vulnerability:** The application was missing a Content Security Policy (CSP), which could allow attackers to execute malicious scripts or load unauthorized resources if other vulnerabilities like XSS were present.
 **Learning:** Even simple static web applications that do not use an external backend can benefit from defense in depth by applying a strict CSP. This app does not use inline scripts or external resources, so a simple `default-src 'self'` policy is sufficient and effective.
 **Prevention:** Include a CSP meta tag in the HTML `<head>` for all static web applications.
+
+## 2026-03-23 - [Client-Side DoS via Unhandled JSON.parse]
+**Vulnerability:** The application read state from `localStorage` without validating if the contents were well-formed JSON, causing an unhandled `JSON.parse` exception if the local storage data was corrupted or tampered with.
+**Learning:** External data sources, even local ones like `localStorage`, should never be blindly trusted. If `localStorage` holds corrupted data (or is tampered with by an extension), the app crashes on load.
+**Prevention:** Always wrap `JSON.parse` operations on external data within a `try...catch` block, allowing the application to fail securely (e.g., reset the state or return null) instead of crashing entirely.
