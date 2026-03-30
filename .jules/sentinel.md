@@ -7,3 +7,8 @@
 **Vulnerability:** The application was missing a Content Security Policy (CSP), which could allow attackers to execute malicious scripts or load unauthorized resources if other vulnerabilities like XSS were present.
 **Learning:** Even simple static web applications that do not use an external backend can benefit from defense in depth by applying a strict CSP. This app does not use inline scripts or external resources, so a simple `default-src 'self'` policy is sufficient and effective.
 **Prevention:** Include a CSP meta tag in the HTML `<head>` for all static web applications.
+
+## 2024-05-23 - [Insecure Deserialization via localStorage]
+**Vulnerability:** The application blindly called `JSON.parse` on the `gameState` object stored in `localStorage`, which can be tampered with by an attacker or inadvertently corrupted.
+**Learning:** Any data retrieved from `localStorage` should be considered untrusted input. If corrupted data is blindly parsed, it will throw a Javascript exception, crashing the application (Client-side DoS) upon loading.
+**Prevention:** Wrap all deserialization logic (`JSON.parse`) in a `try...catch` block. Provide sensible fallback values (e.g., `null`, `0`) if the data format is unexpected or corrupted. Also, ensure parsed primitive values like integers are strictly cast using defensive methods such as `parseInt`.
