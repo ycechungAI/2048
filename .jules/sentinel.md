@@ -12,3 +12,11 @@
 **Vulnerability:** The application read state from `localStorage` without validating if the contents were well-formed JSON, causing an unhandled `JSON.parse` exception if the local storage data was corrupted or tampered with.
 **Learning:** External data sources, even local ones like `localStorage`, should never be blindly trusted. If `localStorage` holds corrupted data (or is tampered with by an extension), the app crashes on load.
 **Prevention:** Always wrap `JSON.parse` operations on external data within a `try...catch` block, allowing the application to fail securely (e.g., reset the state or return null) instead of crashing entirely.
+## 2024-05-24 - [Insecure Deserialization / Client-side DoS]
+**Vulnerability:** The application read game state from `localStorage` and called `JSON.parse()` without error handling. If `localStorage` contained malformed JSON (due to corruption or malicious manipulation), the application would crash and become unplayable.
+**Learning:** Client-side storage like `localStorage` should be treated as untrusted input. Malformed data in storage can lead to a client-side Denial of Service if not handled gracefully.
+**Prevention:** Always wrap JSON parsing of untrusted data in a `try-catch` block and fail securely (e.g., fallback to default/null state) rather than crashing the application.
+## 2024-05-24 - Unhandled JSON.parse in localStorage
+**Vulnerability:** A persistent, client-side Denial of Service (DoS) caused by an unhandled `JSON.parse` acting on `localStorage` data, which is completely user-controllable and can easily be modified or corrupted. Additionally, a prototype pollution vector via `hasOwnProperty` existed in `fakeStorage`.
+**Learning:** `localStorage` is essentially untrusted input since it exists in the user's browser, and can be tampered with or corrupted due to storage limits. Directly parsing it without `try/catch` causes script execution to halt, making the webapp unusable until local storage is manually cleared.
+**Prevention:** Always wrap `JSON.parse` with `try/catch` when dealing with `localStorage`, and fail securely (e.g., reset the data rather than throwing uncaught exceptions). Also use `Object.prototype.hasOwnProperty.call` when checking properties on objects that could potentially have poisoned prototypes.

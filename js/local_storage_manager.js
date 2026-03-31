@@ -6,7 +6,8 @@ window.fakeStorage = {
   },
 
   getItem: function (id) {
-    return this._data.hasOwnProperty(id) ? this._data[id] : undefined;
+    return Object.prototype.hasOwnProperty.call(this._data, id) ?
+      this._data[id] : undefined;
   },
 
   removeItem: function (id) {
@@ -54,7 +55,8 @@ LocalStorageManager.prototype.getGameState = function () {
   try {
     return stateJSON ? JSON.parse(stateJSON) : null;
   } catch (e) {
-    return null; // Fallback securely if state is corrupted
+    // Fail securely: if JSON is corrupted, return null to start a new game
+    return null;
   }
 };
 
