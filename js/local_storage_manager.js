@@ -55,7 +55,13 @@ LocalStorageManager.prototype.setBestScore = function (score) {
 LocalStorageManager.prototype.getGameState = function () {
   var stateJSON = this.storage.getItem(this.gameStateKey);
   try {
-    return stateJSON ? JSON.parse(stateJSON) : null;
+    var state = stateJSON ? JSON.parse(stateJSON) : null;
+    // Validate state structure to prevent client-side DoS from malformed state
+    if (state !== null && (!state.grid || state.grid.size === undefined ||
+        state.grid.cells === undefined)) {
+      return null;
+    }
+    return state;
   } catch (e) {
     // Fail securely: if JSON is corrupted, return null to start a new game
     return null;
